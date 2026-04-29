@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Defensor de la Tierra | Juego NASA NEO</title>
+    <style>
+        :root {
+            --primary: #00f2ff;
+            --secondary: #7000ff;
+            --danger: #ff0055;
+            --success: #00ff88;
+            --bg: #050510;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            /* Fondo de estrellas */
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 40px 70px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 100px 100px, #ddd, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 150px 150px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 250px 200px, #bbb, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 300px 350px, #fff, rgba(0,0,0,0));
+            background-size: 350px 350px;
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        #game-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+
+        /* UI Layers */
+        .ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            z-index: 10;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            background: transparent; /* Barra transparente */
+            padding: 10px 15px;
+            border-radius: 12px;
+        }
+
+        .stat-box {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+            text-shadow: 0 0 5px black;
+        }
+
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.8), 0 0 5px black;
+            line-height: 1;
+        }
+
+        .health-bar-container {
+            width: 180px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            margin-top: 5px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        #health-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, var(--danger), #ff8800);
+            transition: width 0.3s ease;
+            box-shadow: 0 0 15px var(--danger);
+        }
+
+        /* Responsive UI */
+        @media (max-width: 600px) {
+            .stats-bar {
+                padding: 10px;
+            }
+            .stat-value {
+                font-size: 1.2rem;
+            }
+            .health-bar-container {
+                width: 120px;
+            }
+            #earth {
+                width: 400px;
+                height: 400px;
+                bottom: -180px;
+            }
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+
+        /* Earth Visual con imagen generada */
+        #earth {
+            position: absolute;
+            bottom: -250px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background-image: url('earth_asset_texture_1776988856787.png');
+            background-size: cover;
+            background-position: center;
+            border-radius: 50%;
+            /* Atmósfera más clara y brillante */
+            box-shadow: 
+                0 0 100px rgba(0, 242, 255, 0.6), 
+                0 0 40px rgba(0, 242, 255, 0.4),
+                inset 0 0 50px rgba(0, 242, 255, 0.3);
+            z-index: 1;
+            pointer-events: none;
+            animation: rotateSlowly 180s linear infinite;
+        }
+
+        @keyframes rotateSlowly {
+            from { transform: translateX(-50%) rotate(0deg); }
+            to { transform: translateX(-50%) rotate(360deg); }
+        }
+
+        /* Menus */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(15px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            pointer-events: all;
+            transition: opacity 0.5s ease;
+        }
+
+        .overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            font-weight: 900;
+            letter-spacing: 5px;
+        }
+
+        .menu-text {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 40px;
+            text-align: center;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-top: 15px;
+            font-size: 0.9rem;
+            padding: 10px 25px;
+        }
+
+        .btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(112, 0, 255, 0.5);
+        }
+
+        /* Notification */
+        #notification {
+            position: absolute;
+            bottom: 480px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s;
+            text-align: center;
+            z-index: 5;
+        }
+
+        .asteroid-label {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 10px;
+            pointer-events: none;
+            white-space: nowrap;
+            text-shadow: 0 0 5px black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="game-canvas"></canvas>
+    
+    <div id="earth"></div>
+
+    <div class="ui-layer">
+        <div class="stats-bar">
+            <div class="stat-box">
+                <div class="stat-label">PUNTUACIÓN</div>
+                <div id="score-val" class="stat-value">0000</div>
+            </div>
+            
+            <div class="stat-box" style="text-align: right;">
+                <div class="stat-label">INTEGRIDAD TERRESTRE</div>
+                <div id="health-val" class="stat-value">100%</div>
+                <div class="health-bar-container">
+                    <div id="health-fill"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="notification">Asteroide entrante: (2024 MK1)</div>
+    </div>
+
+    <div id="start-menu" class="overlay">
+        <h1>Defensor de la Tierra</h1>
+        <p class="menu-text">
+            Datos reales de la NASA: Utilizando asteroides detectados en los últimos 7 días.
+            Destrúyelos antes de que impacten contra la Tierra. Los más grandes son más difíciles de destruir.
+        </p>
+        <button id="start-btn" class="btn">Iniciar Defensa</button>
+        <button onclick="window.location.href='monitor.html'" class="btn secondary">Ver Monitor de Datos NASA</button>
+    </div>
+
+    <!-- Menú Game Over -->
+    <div id="game-over-menu" class="overlay hidden">
+        <h1 style="background: linear-gradient(to right, var(--danger), #ff8800); -webkit-background-clip: text;">Planeta Perdido</h1>
+        <p class="menu-text">Puntuación Final: <span id="final-score" style="color: var(--primary); font-weight: bold;">0</span></p>
+        <button id="restart-btn" class="btn">Reiniciar Sistema de Defensa</button>
+        <button onclick="window.location.href='monitor.html'" class="btn secondary">Ver Monitor de Datos NASA</button>
+    </div>
+
+    <script>
+        const NASA_API_KEY = 'qTzbeuAiBALp66JQKmFveKEPiXcuS1t2ZScIlNPu';
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let score = 0;
+        let health = 100;
+        let gameActive = false;
+        let asteroids = [];
+        let particles = [];
+        let neoPool = [];
+        let lastSpawn = 0;
+        let spawnRate = 2000; // ms
+
+        // Audio simulation (Visual only for now)
+        const shake = { amount: 0 };
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        async function fetchRealAsteroids() {
+            const end = new Date();
+            const start = new Date();
+            start.setDate(start.getDate() - 7);
+            const fmt = (d) => d.toISOString().split('T')[0];
+            
+            const url = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${fmt(start)}&end_date=${fmt(end)}&api_key=${NASA_API_KEY}`;
+            
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                const flattened = [];
+                Object.values(data.near_earth_objects).forEach(day => {
+                    day.forEach(neo => {
+                        flattened.push({
+                            name: neo.name,
+                            size: neo.estimated_diameter.meters.estimated_diameter_max,
+                            velocity: parseFloat(neo.close_approach_data[0].relative_velocity.kilometers_per_hour),
+                            isHazardous: neo.is_potentially_hazardous_asteroid
+                        });
+                    });
+                });
+                return flattened;
+            } catch (e) {
+                console.error("Failed to load NASA data, using fallback", e);
+                return Array(10).fill().map((_, i) => ({
+                    name: `Fallback-${i+1}`,
+                    size: 100 + Math.random() * 500,
+                    velocity: 20000 + Math.random() * 40000,
+                    isHazardous: Math.random() > 0.8
+                }));
+            }
+        }
+
+        class Asteroid {
+            constructor(data) {
+                this.name = data.name;
+                this.baseSize = data.size;
+                this.velocity = data.velocity;
+                this.isHazardous = data.isHazardous;
+                
+                // Visual properties
+                this.radius = Math.max(10, Math.min(50, this.baseSize / 10));
+                this.x = Math.random() * (canvas.width - this.radius * 2) + this.radius;
+                this.y = -this.radius;
+                
+                // Speed calculation: map ~20k-100k km/h to pixel speed 1-5
+                this.speed = (this.velocity / 20000) * (0.5 + Math.random() * 0.5);
+                this.rotation = 0;
+                this.rotSpeed = (Math.random() - 0.5) * 0.05;
+                
+                this.health = Math.ceil(this.radius / 10);
+                this.maxHealth = this.health;
+            }
+
+            update() {
+                this.y += this.speed;
+                this.rotation += this.rotSpeed;
+                
+                // Hitbox circular corregida (Coincidiendo con la posición visual)
+                const planetX = canvas.width / 2;
+                const planetY = canvas.height - 50; // Centro real basado en bottom: -250px y radio 300
+                const planetR = 300;
+                
+                const dx = this.x - planetX;
+                const dy = this.y - planetY;
+                const distance = Math.sqrt(dx*dx + dy*dy);
+
+                if (distance < planetR + this.radius) {
+                    impact(this);
+                    return false;
+                }
+                return true;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                
+                // Glow
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = this.isHazardous ? '#ff0055' : '#7000ff';
+                
+                // Body
+                ctx.beginPath();
+                ctx.fillStyle = '#333';
+                ctx.strokeStyle = this.isHazardous ? '#ff0055' : '#00f2ff';
+                ctx.lineWidth = 2;
+                
+                // Irregular shape
+                for(let i = 0; i < 8; i++) {
+                    const angle = (i / 8) * Math.PI * 2;
+                    const r = this.radius * (0.8 + Math.random() * 0.4);
+                    const px = Math.cos(angle) * r;
+                    const py = Math.sin(angle) * r;
+                    if(i === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                }
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+                
+                ctx.restore();
+                
+                // Label
+                ctx.fillStyle = 'white';
+                ctx.font = '10px monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText(this.name, this.x, this.y - this.radius - 10);
+            }
+        }
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 10;
+                this.vy = (Math.random() - 0.5) * 10;
+                this.radius = Math.random() * 3;
+                this.alpha = 1;
+                this.color = color;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= 0.02;
+                return this.alpha > 0;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function impact(asteroid) {
+            const damage = asteroid.isHazardous ? 20 : 10;
+            health -= damage;
+            shake.amount = 20;
+            
+            // Explosion particles en la posición del asteroide
+            for(let i = 0; i < 20; i++) {
+                particles.push(new Particle(asteroid.x, asteroid.y, '#ffaa00'));
+            }
+            
+            updateUI();
+            if (health <= 0) gameOver();
+        }
+
+        function updateUI() {
+            document.getElementById('score-val').textContent = score.toString().padStart(4, '0');
+            document.getElementById('health-val').textContent = `${Math.max(0, health)}%`;
+            document.getElementById('health-fill').style.width = `${Math.max(0, health)}%`;
+            
+            if (health < 30) {
+                document.getElementById('health-fill').style.background = 'var(--danger)';
+            }
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            if (!gameActive) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+            
+            let hitAnything = false;
+
+            for (let i = asteroids.length - 1; i >= 0; i--) {
+                const a = asteroids[i];
+                const dx = mx - a.x;
+                const dy = my - a.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                
+                if (dist < a.radius + 15) {
+                    a.health--;
+                    hitAnything = true;
+                    // Hit particles
+                    for(let p=0; p<5; p++) particles.push(new Particle(mx, my, '#00f2ff'));
+                    
+                    if (a.health <= 0) {
+                        score += Math.round(a.radius * 10);
+                        // Explosion
+                        for(let p=0; p<15; p++) particles.push(new Particle(a.x, a.y, a.isHazardous ? '#ff0055' : '#00f2ff'));
+                        asteroids.splice(i, 1);
+                        updateUI();
+                    }
+                    break;
+                }
+            }
+
+            // Si tocas la Tierra (Hitbox de penalización)
+            if (!hitAnything) {
+                const planetX = canvas.width / 2;
+                const planetY = canvas.height - 50;
+                const planetR = 300;
+                const dx = mx - planetX;
+                const dy = my - planetY;
+                const distToPlanet = Math.sqrt(dx*dx + dy*dy);
+
+                if (distToPlanet < planetR) {
+                    health -= 5; // Penalización por disparar a la Tierra
+                    shake.amount = 5;
+                    updateUI();
+                    for(let p=0; p<10; p++) particles.push(new Particle(mx, my, '#ff0000'));
+                    if (health <= 0) gameOver();
+                }
+            }
+        });
+
+        function gameOver() {
+            gameActive = false;
+            document.getElementById('game-over-menu').classList.remove('hidden');
+            document.getElementById('final-score').textContent = score;
+        }
+
+        function loop(timestamp) {
+            if (!gameActive) return;
+
+            // Screen shake
+            ctx.save();
+            if (shake.amount > 0) {
+                const sx = (Math.random() - 0.5) * shake.amount;
+                const sy = (Math.random() - 0.5) * shake.amount;
+                ctx.translate(sx, sy);
+                shake.amount *= 0.9;
+            }
+
+            ctx.clearRect(-100, -100, canvas.width + 200, canvas.height + 200);
+
+            // Spawn
+            if (timestamp - lastSpawn > spawnRate) {
+                const data = neoPool[Math.floor(Math.random() * neoPool.length)];
+                if (data) {
+                    asteroids.push(new Asteroid(data));
+                    showNotify(data.name);
+                }
+                lastSpawn = timestamp;
+                spawnRate = Math.max(800, spawnRate * 0.98); // Get harder
+            }
+
+            // Update & Draw Asteroids
+            asteroids = asteroids.filter(a => {
+                const alive = a.update();
+                if (alive) a.draw();
+                return alive;
+            });
+
+            // Particles
+            particles = particles.filter(p => {
+                const alive = p.update();
+                if (alive) p.draw();
+                return alive;
+            });
+
+            ctx.restore();
+            requestAnimationFrame(loop);
+        }
+
+        function showNotify(name) {
+            const el = document.getElementById('notification');
+            el.textContent = `🚨 ALERTA: ${name}`;
+            el.style.opacity = 1;
+            setTimeout(() => el.style.opacity = 0, 1500);
+        }
+
+        async function initGame() {
+            document.getElementById('start-menu').classList.add('hidden');
+            document.getElementById('game-over-menu').classList.add('hidden');
+            
+            score = 0;
+            health = 100;
+            asteroids = [];
+            particles = [];
+            spawnRate = 2000;
+            updateUI();
+            
+            if (neoPool.length === 0) {
+                neoPool = await fetchRealAsteroids();
+            }
+            
+            gameActive = true;
+            requestAnimationFrame(loop);
+        }
+
+        document.getElementById('start-btn').addEventListener('click', initGame);
+        document.getElementById('restart-btn').addEventListener('click', initGame);
+
+        // Pre-fetch data
+        fetchRealAsteroids().then(data => neoPool = data);
+    </script>
+</body>
+</html>
