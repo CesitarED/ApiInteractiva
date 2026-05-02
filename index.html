@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,7 +23,6 @@
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background-color: var(--bg);
-            /* Fondo de estrellas */
             background-image: 
                 radial-gradient(1px 1px at 20px 30px, #eee, rgba(0,0,0,0)),
                 radial-gradient(1px 1px at 40px 70px, #fff, rgba(0,0,0,0)),
@@ -47,7 +46,6 @@
             cursor: crosshair;
         }
 
-        /* UI Layers */
         .ui-layer {
             position: absolute;
             top: 0;
@@ -67,9 +65,10 @@
             align-items: center;
             gap: 10px;
             width: 100%;
-            background: transparent; /* Barra transparente */
-            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
             border-radius: 12px;
+            backdrop-filter: blur(5px);
         }
 
         .stat-box {
@@ -84,15 +83,19 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 2px;
-            text-shadow: 0 0 5px black;
         }
 
         .stat-value {
             font-size: 1.6rem;
             font-weight: 900;
             color: var(--primary);
-            text-shadow: 0 0 10px rgba(0, 242, 255, 0.8), 0 0 5px black;
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.8);
             line-height: 1;
+        }
+
+        #level-val {
+            color: var(--success);
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
         }
 
         .health-bar-container {
@@ -113,28 +116,6 @@
             box-shadow: 0 0 15px var(--danger);
         }
 
-        /* Responsive UI */
-        @media (max-width: 600px) {
-            .stats-bar {
-                padding: 10px;
-            }
-            .stat-value {
-                font-size: 1.2rem;
-            }
-            .health-bar-container {
-                width: 120px;
-            }
-            #earth {
-                width: 400px;
-                height: 400px;
-                bottom: -180px;
-            }
-            h1 {
-                font-size: 2.2rem;
-            }
-        }
-
-        /* Earth Visual con imagen generada */
         #earth {
             position: absolute;
             bottom: -250px;
@@ -146,11 +127,7 @@
             background-size: cover;
             background-position: center;
             border-radius: 50%;
-            /* Atmósfera más clara y brillante */
-            box-shadow: 
-                0 0 100px rgba(0, 242, 255, 0.6), 
-                0 0 40px rgba(0, 242, 255, 0.4),
-                inset 0 0 50px rgba(0, 242, 255, 0.3);
+            box-shadow: 0 0 100px rgba(0, 242, 255, 0.6), inset 0 0 50px rgba(0, 242, 255, 0.3);
             z-index: 1;
             pointer-events: none;
             animation: rotateSlowly 180s linear infinite;
@@ -161,14 +138,13 @@
             to { transform: translateX(-50%) rotate(360deg); }
         }
 
-        /* Menus */
         .overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.9);
             backdrop-filter: blur(15px);
             display: flex;
             flex-direction: column;
@@ -185,7 +161,7 @@
         }
 
         h1 {
-            font-size: 4rem;
+            font-size: 3.5rem;
             margin-bottom: 10px;
             background: linear-gradient(to right, var(--primary), var(--secondary));
             -webkit-background-clip: text;
@@ -193,14 +169,42 @@
             text-transform: uppercase;
             font-weight: 900;
             letter-spacing: 5px;
+            text-align: center;
         }
 
         .menu-text {
             color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             text-align: center;
             max-width: 600px;
             line-height: 1.6;
+            padding: 0 20px;
+        }
+
+        .input-group {
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .input-premium {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(0, 242, 255, 0.3);
+            border-radius: 12px;
+            padding: 15px 25px;
+            color: white;
+            font-size: 1.2rem;
+            width: 300px;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .input-premium:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
         }
 
         .btn {
@@ -217,6 +221,17 @@
             letter-spacing: 2px;
         }
 
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(112, 0, 255, 0.5);
+        }
+
+        .btn:disabled {
+            filter: grayscale(1);
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
         .btn.secondary {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -225,17 +240,6 @@
             padding: 10px 25px;
         }
 
-        .btn.secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-        }
-
-        .btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(112, 0, 255, 0.5);
-        }
-
-        /* Notification */
         #notification {
             position: absolute;
             bottom: 480px;
@@ -248,15 +252,38 @@
             transition: opacity 0.3s;
             text-align: center;
             z-index: 5;
+            text-shadow: 0 0 10px black;
         }
 
-        .asteroid-label {
+        #multiplier-badge {
             position: absolute;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 10px;
-            pointer-events: none;
-            white-space: nowrap;
-            text-shadow: 0 0 5px black;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--success);
+            color: black;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 900;
+            font-size: 1.2rem;
+            box-shadow: 0 0 20px var(--success);
+            display: none;
+            z-index: 5;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.1); }
+            100% { transform: translateX(-50%) scale(1); }
+        }
+
+        #save-status {
+            font-size: 0.9rem;
+            margin-top: 10px;
+            color: var(--success);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
     </style>
 </head>
@@ -268,6 +295,16 @@
     <div class="ui-layer">
         <div class="stats-bar">
             <div class="stat-box">
+                <div class="stat-label">PILOTO</div>
+                <div id="player-name-display" class="stat-value" style="font-size: 1.2rem;">---</div>
+            </div>
+            
+            <div class="stat-box" style="text-align: center;">
+                <div class="stat-label">NIVEL</div>
+                <div id="level-val" class="stat-value">1</div>
+            </div>
+
+            <div class="stat-box" style="text-align: center;">
                 <div class="stat-label">PUNTUACIÓN</div>
                 <div id="score-val" class="stat-value">0000</div>
             </div>
@@ -281,25 +318,33 @@
             </div>
         </div>
 
-        <div id="notification">Asteroide entrante: (2024 MK1)</div>
+        <div id="notification">Asteroide entrante</div>
+        <div id="multiplier-badge">X2 PUNTOS ACTIVADO</div>
     </div>
 
     <div id="start-menu" class="overlay">
         <h1>Defensor de la Tierra</h1>
         <p class="menu-text">
-            Datos reales de la NASA: Utilizando asteroides detectados en los últimos 7 días.
-            Destrúyelos antes de que impacten contra la Tierra. Los más grandes son más difíciles de destruir.
+            Bienvenido, Comandante. Los asteroides detectados por la NASA en los últimos 7 días se dirigen hacia nosotros. 
+            Identifícate para iniciar el sistema de defensa.
         </p>
+        
+        <div class="input-group">
+            <input type="text" id="username-input" placeholder="Tu Nombre de Piloto" maxlength="15" class="input-premium">
+        </div>
+
         <button id="start-btn" class="btn">Iniciar Defensa</button>
-        <button onclick="window.location.href='monitor.html'" class="btn secondary">Ver Monitor de Datos NASA</button>
+        <button onclick="window.location.href='top.php'" class="btn secondary">Ver Ranking Global</button>
+        <button onclick="window.location.href='monitor.html'" class="btn secondary">Monitor de Datos NASA</button>
     </div>
 
-    <!-- Menú Game Over -->
     <div id="game-over-menu" class="overlay hidden">
         <h1 style="background: linear-gradient(to right, var(--danger), #ff8800); -webkit-background-clip: text;">Planeta Perdido</h1>
         <p class="menu-text">Puntuación Final: <span id="final-score" style="color: var(--primary); font-weight: bold;">0</span></p>
-        <button id="restart-btn" class="btn">Reiniciar Sistema de Defensa</button>
-        <button onclick="window.location.href='monitor.html'" class="btn secondary">Ver Monitor de Datos NASA</button>
+        <p class="menu-text">Nivel Alcanzado: <span id="final-level" style="color: var(--success); font-weight: bold;">1</span></p>
+        <div id="save-status">Guardando puntaje...</div>
+        <button id="restart-btn" class="btn" style="margin-top: 20px;">Reiniciar Sistema</button>
+        <button onclick="window.location.href='top.php'" class="btn secondary">Ver Ranking Global</button>
     </div>
 
     <script>
@@ -309,14 +354,18 @@
         
         let score = 0;
         let health = 100;
+        let level = 1;
         let gameActive = false;
+        let player = '';
         let asteroids = [];
         let particles = [];
+        let powerUps = [];
         let neoPool = [];
         let lastSpawn = 0;
-        let spawnRate = 2000; // ms
-
-        // Audio simulation (Visual only for now)
+        let lastPowerUpSpawn = 0;
+        let spawnRate = 2000;
+        let scoreMultiplier = 1;
+        let powerUpTimer = null;
         const shake = { amount: 0 };
 
         function resize() {
@@ -331,7 +380,6 @@
             const start = new Date();
             start.setDate(start.getDate() - 7);
             const fmt = (d) => d.toISOString().split('T')[0];
-            
             const url = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${fmt(start)}&end_date=${fmt(end)}&api_key=${NASA_API_KEY}`;
             
             try {
@@ -348,36 +396,35 @@
                         });
                     });
                 });
-                return flattened;
+                return flattened.sort((a, b) => a.size - b.size);
             } catch (e) {
-                console.error("Failed to load NASA data, using fallback", e);
-                return Array(10).fill().map((_, i) => ({
-                    name: `Fallback-${i+1}`,
-                    size: 100 + Math.random() * 500,
+                console.error("Falló la carga de datos NASA", e);
+                return Array(20).fill().map((_, i) => ({
+                    name: `Asteroid-${i+1}`,
+                    size: 50 + i * 50,
                     velocity: 20000 + Math.random() * 40000,
-                    isHazardous: Math.random() > 0.8
+                    isHazardous: i > 15
                 }));
             }
         }
 
         class Asteroid {
-            constructor(data) {
+            constructor(data, level) {
                 this.name = data.name;
                 this.baseSize = data.size;
                 this.velocity = data.velocity;
                 this.isHazardous = data.isHazardous;
                 
-                // Visual properties
-                this.radius = Math.max(10, Math.min(50, this.baseSize / 10));
+                this.radius = Math.max(12, Math.min(65, this.baseSize / 10));
                 this.x = Math.random() * (canvas.width - this.radius * 2) + this.radius;
                 this.y = -this.radius;
                 
-                // Speed calculation: map ~20k-100k km/h to pixel speed 1-5
-                this.speed = (this.velocity / 20000) * (0.5 + Math.random() * 0.5);
+                const levelMultiplier = 1 + (level - 1) * 0.3;
+                this.speed = (this.velocity / 25000) * levelMultiplier * (0.6 + Math.random() * 0.4);
                 this.rotation = 0;
-                this.rotSpeed = (Math.random() - 0.5) * 0.05;
+                this.rotSpeed = (Math.random() - 0.5) * 0.1;
                 
-                this.health = Math.ceil(this.radius / 10);
+                this.health = Math.ceil(this.radius / 7);
                 this.maxHealth = this.health;
             }
 
@@ -385,14 +432,10 @@
                 this.y += this.speed;
                 this.rotation += this.rotSpeed;
                 
-                // Hitbox circular corregida (Coincidiendo con la posición visual)
                 const planetX = canvas.width / 2;
-                const planetY = canvas.height - 50; // Centro real basado en bottom: -250px y radio 300
+                const planetY = canvas.height - 50;
                 const planetR = 300;
-                
-                const dx = this.x - planetX;
-                const dy = this.y - planetY;
-                const distance = Math.sqrt(dx*dx + dy*dy);
+                const distance = Math.sqrt((this.x - planetX)**2 + (this.y - planetY)**2);
 
                 if (distance < planetR + this.radius) {
                     impact(this);
@@ -405,18 +448,14 @@
                 ctx.save();
                 ctx.translate(this.x, this.y);
                 ctx.rotate(this.rotation);
-                
-                // Glow
                 ctx.shadowBlur = 15;
-                ctx.shadowColor = this.isHazardous ? '#ff0055' : '#7000ff';
+                ctx.shadowColor = this.isHazardous ? '#ff0055' : '#00f2ff';
                 
-                // Body
                 ctx.beginPath();
-                ctx.fillStyle = '#333';
+                ctx.fillStyle = '#1a1a1a';
                 ctx.strokeStyle = this.isHazardous ? '#ff0055' : '#00f2ff';
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 2.5;
                 
-                // Irregular shape
                 for(let i = 0; i < 8; i++) {
                     const angle = (i / 8) * Math.PI * 2;
                     const r = this.radius * (0.8 + Math.random() * 0.4);
@@ -428,14 +467,45 @@
                 ctx.closePath();
                 ctx.fill();
                 ctx.stroke();
-                
                 ctx.restore();
                 
-                // Label
                 ctx.fillStyle = 'white';
-                ctx.font = '10px monospace';
+                ctx.font = 'bold 10px Segoe UI';
                 ctx.textAlign = 'center';
-                ctx.fillText(this.name, this.x, this.y - this.radius - 10);
+                ctx.fillText(this.name, this.x, this.y - this.radius - 8);
+            }
+        }
+
+        class PowerUp {
+            constructor() {
+                this.radius = 20;
+                this.x = Math.random() * (canvas.width - 40) + 20;
+                this.y = -20;
+                this.speed = 3;
+                this.type = 'x2';
+                this.pulse = 0;
+            }
+            update() {
+                this.y += this.speed;
+                this.pulse += 0.1;
+                return this.y < canvas.height + 20;
+            }
+            draw() {
+                ctx.save();
+                const glow = 15 + Math.sin(this.pulse) * 5;
+                ctx.shadowBlur = glow;
+                ctx.shadowColor = '#ffcc00';
+                ctx.fillStyle = '#ffcc00';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = 'black';
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('x2', this.x, this.y);
+                ctx.restore();
             }
         }
 
@@ -443,16 +513,16 @@
             constructor(x, y, color) {
                 this.x = x;
                 this.y = y;
-                this.vx = (Math.random() - 0.5) * 10;
-                this.vy = (Math.random() - 0.5) * 10;
-                this.radius = Math.random() * 3;
+                this.vx = (Math.random() - 0.5) * 15;
+                this.vy = (Math.random() - 0.5) * 15;
+                this.radius = Math.random() * 5;
                 this.alpha = 1;
                 this.color = color;
             }
             update() {
                 this.x += this.vx;
                 this.y += this.vy;
-                this.alpha -= 0.02;
+                this.alpha -= 0.025;
                 return this.alpha > 0;
             }
             draw() {
@@ -467,72 +537,68 @@
         }
 
         function impact(asteroid) {
-            const damage = asteroid.isHazardous ? 20 : 10;
+            const damage = asteroid.isHazardous ? 25 : 15;
             health -= damage;
-            shake.amount = 20;
-            
-            // Explosion particles en la posición del asteroide
-            for(let i = 0; i < 20; i++) {
-                particles.push(new Particle(asteroid.x, asteroid.y, '#ffaa00'));
-            }
-            
+            shake.amount = 25;
+            for(let i = 0; i < 20; i++) particles.push(new Particle(asteroid.x, asteroid.y, '#ff4400'));
             updateUI();
             if (health <= 0) gameOver();
         }
 
         function updateUI() {
-            document.getElementById('score-val').textContent = score.toString().padStart(4, '0');
+            document.getElementById('score-val').textContent = score.toString().padStart(5, '0');
+            document.getElementById('level-val').textContent = level;
             document.getElementById('health-val').textContent = `${Math.max(0, health)}%`;
             document.getElementById('health-fill').style.width = `${Math.max(0, health)}%`;
-            
-            if (health < 30) {
-                document.getElementById('health-fill').style.background = 'var(--danger)';
-            }
+            document.getElementById('player-name-display').textContent = player;
+            document.getElementById('multiplier-badge').style.display = scoreMultiplier > 1 ? 'block' : 'none';
         }
 
         canvas.addEventListener('mousedown', (e) => {
             if (!gameActive) return;
-            
             const rect = canvas.getBoundingClientRect();
             const mx = e.clientX - rect.left;
             const my = e.clientY - rect.top;
-            
             let hitAnything = false;
 
+            // Check PowerUps
+            for (let i = powerUps.length - 1; i >= 0; i--) {
+                const p = powerUps[i];
+                if (Math.sqrt((mx - p.x)**2 + (my - p.y)**2) < p.radius + 15) {
+                    activatePowerUp();
+                    powerUps.splice(i, 1);
+                    hitAnything = true;
+                    break;
+                }
+            }
+
+            if (hitAnything) return;
+
+            // Check Asteroids
             for (let i = asteroids.length - 1; i >= 0; i--) {
                 const a = asteroids[i];
-                const dx = mx - a.x;
-                const dy = my - a.y;
-                const dist = Math.sqrt(dx*dx + dy*dy);
-                
-                if (dist < a.radius + 15) {
+                if (Math.sqrt((mx - a.x)**2 + (my - a.y)**2) < a.radius + 20) {
                     a.health--;
                     hitAnything = true;
-                    // Hit particles
-                    for(let p=0; p<5; p++) particles.push(new Particle(mx, my, '#00f2ff'));
+                    for(let p=0; p<5; p++) particles.push(new Particle(mx, my, varColor(a)));
                     
                     if (a.health <= 0) {
-                        score += Math.round(a.radius * 10);
-                        // Explosion
-                        for(let p=0; p<15; p++) particles.push(new Particle(a.x, a.y, a.isHazardous ? '#ff0055' : '#00f2ff'));
+                        score += Math.round(a.radius * 5 * level * scoreMultiplier);
+                        for(let p=0; p<15; p++) particles.push(new Particle(a.x, a.y, varColor(a)));
                         asteroids.splice(i, 1);
+                        checkLevelUp();
                         updateUI();
                     }
                     break;
                 }
             }
 
-            // Si tocas la Tierra (Hitbox de penalización)
             if (!hitAnything) {
                 const planetX = canvas.width / 2;
                 const planetY = canvas.height - 50;
                 const planetR = 300;
-                const dx = mx - planetX;
-                const dy = my - planetY;
-                const distToPlanet = Math.sqrt(dx*dx + dy*dy);
-
-                if (distToPlanet < planetR) {
-                    health -= 5; // Penalización por disparar a la Tierra
+                if (Math.sqrt((mx-planetX)**2 + (my-planetY)**2) < planetR) {
+                    health -= 5;
                     shake.amount = 5;
                     updateUI();
                     for(let p=0; p<10; p++) particles.push(new Particle(mx, my, '#ff0000'));
@@ -541,45 +607,77 @@
             }
         });
 
-        function gameOver() {
-            gameActive = false;
-            document.getElementById('game-over-menu').classList.remove('hidden');
-            document.getElementById('final-score').textContent = score;
+        function activatePowerUp() {
+            scoreMultiplier = 2;
+            showNotify("¡X2 PUNTOS ACTIVADO!");
+            updateUI();
+            if (powerUpTimer) clearTimeout(powerUpTimer);
+            powerUpTimer = setTimeout(() => {
+                scoreMultiplier = 1;
+                showNotify("X2 Puntos Finalizado");
+                updateUI();
+            }, 10000);
+        }
+
+        function varColor(a) { return a.isHazardous ? '#ff0055' : '#00f2ff'; }
+
+        function checkLevelUp() {
+            const nextLevelScore = level * level * 2000;
+            if (score >= nextLevelScore) {
+                level++;
+                spawnRate = Math.max(600, 2000 - (level * 150));
+                showNotify(`¡NIVEL ${level}! Dificultad Aumentada`);
+            }
         }
 
         function loop(timestamp) {
             if (!gameActive) return;
 
-            // Screen shake
             ctx.save();
             if (shake.amount > 0) {
-                const sx = (Math.random() - 0.5) * shake.amount;
-                const sy = (Math.random() - 0.5) * shake.amount;
-                ctx.translate(sx, sy);
+                ctx.translate((Math.random()-0.5)*shake.amount, (Math.random()-0.5)*shake.amount);
                 shake.amount *= 0.9;
             }
 
             ctx.clearRect(-100, -100, canvas.width + 200, canvas.height + 200);
 
-            // Spawn
+            // Asteroid Spawn
             if (timestamp - lastSpawn > spawnRate) {
-                const data = neoPool[Math.floor(Math.random() * neoPool.length)];
+                const poolSize = neoPool.length;
+                
+                // Bias dinámico: 
+                // Nivel 1: Bias ~2.0 (sesgado a asteroides pequeños)
+                // Nivel 2: Bias ~1.0 (uniforme)
+                // Nivel 3+: Bias < 1.0 (sesgado a asteroides grandes)
+                const spawnBias = 2.0 / level; 
+                let idx = Math.floor(Math.pow(Math.random(), spawnBias) * poolSize);
+                const data = neoPool[Math.min(poolSize - 1, idx)];
+                
                 if (data) {
-                    asteroids.push(new Asteroid(data));
-                    showNotify(data.name);
+                    asteroids.push(new Asteroid(data, level));
+                    if(data.isHazardous) showNotify(`¡ALERTA! ${data.name}`);
                 }
                 lastSpawn = timestamp;
-                spawnRate = Math.max(800, spawnRate * 0.98); // Get harder
             }
 
-            // Update & Draw Asteroids
+            // PowerUp Spawn (Cada ~15-20 seg o 5% de probabilidad cada ciclo)
+            if (timestamp - lastPowerUpSpawn > 15000 && Math.random() < 0.005) {
+                powerUps.push(new PowerUp());
+                lastPowerUpSpawn = timestamp;
+            }
+
             asteroids = asteroids.filter(a => {
                 const alive = a.update();
                 if (alive) a.draw();
                 return alive;
             });
 
-            // Particles
+            powerUps = powerUps.filter(p => {
+                const alive = p.update();
+                if (alive) p.draw();
+                return alive;
+            });
+
             particles = particles.filter(p => {
                 const alive = p.update();
                 if (alive) p.draw();
@@ -590,36 +688,61 @@
             requestAnimationFrame(loop);
         }
 
-        function showNotify(name) {
+        function showNotify(text) {
             const el = document.getElementById('notification');
-            el.textContent = `🚨 ALERTA: ${name}`;
+            el.textContent = text;
             el.style.opacity = 1;
-            setTimeout(() => el.style.opacity = 0, 1500);
+            setTimeout(() => el.style.opacity = 0, 2000);
+        }
+
+        async function saveScore() {
+            const statusEl = document.getElementById('save-status');
+            statusEl.style.opacity = 1;
+            const formData = new FormData();
+            formData.append('usuario', player);
+            formData.append('puntaje', score);
+            formData.append('nivel', level);
+            try {
+                const res = await fetch('Guardar.php', { method: 'POST', body: formData });
+                const text = await res.text();
+                statusEl.textContent = text;
+            } catch (e) {
+                statusEl.textContent = "Error al conectar con el servidor";
+                statusEl.style.color = "var(--danger)";
+            }
+        }
+
+        function gameOver() {
+            gameActive = false;
+            document.getElementById('game-over-menu').classList.remove('hidden');
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('final-level').textContent = level;
+            saveScore();
         }
 
         async function initGame() {
+            const nameInput = document.getElementById('username-input');
+            if (!nameInput.value.trim()) {
+                alert("Por favor, ingresa tu nombre de piloto.");
+                return;
+            }
+            player = nameInput.value.trim();
             document.getElementById('start-menu').classList.add('hidden');
             document.getElementById('game-over-menu').classList.add('hidden');
-            
-            score = 0;
-            health = 100;
-            asteroids = [];
-            particles = [];
-            spawnRate = 2000;
+            score = 0; health = 100; level = 1;
+            asteroids = []; particles = []; powerUps = [];
+            spawnRate = 2000; scoreMultiplier = 1;
             updateUI();
-            
-            if (neoPool.length === 0) {
-                neoPool = await fetchRealAsteroids();
-            }
-            
+            if (neoPool.length === 0) neoPool = await fetchRealAsteroids();
             gameActive = true;
             requestAnimationFrame(loop);
         }
 
         document.getElementById('start-btn').addEventListener('click', initGame);
         document.getElementById('restart-btn').addEventListener('click', initGame);
-
-        // Pre-fetch data
+        document.getElementById('username-input').addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') initGame();
+        });
         fetchRealAsteroids().then(data => neoPool = data);
     </script>
 </body>
