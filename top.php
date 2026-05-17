@@ -98,7 +98,8 @@
 
     <div class="ranking-container">
         <?php
-        $conexion = mysqli_connect("localhost", "root", "", "JUEGO_NASA");
+        $puerto = 3306; // ⚠️ CAMBIA ESTE NÚMERO POR EL PUERTO QUE PUSISTE EN XAMPP (ej. 3307)
+        $conexion = mysqli_connect("localhost", "root", "", "JUEGO_NASA", $puerto);
 
         if (!$conexion) {
             echo "<p style='color: #ff0055;'>Error de conexión: " . mysqli_connect_error() . "</p>";
