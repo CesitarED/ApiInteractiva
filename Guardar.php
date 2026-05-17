@@ -7,7 +7,7 @@ $servidor = "localhost";
 $usuario_db = "root";
 $password_db = "";
 $nombre_db = "JUEGO_NASA";
-$puerto = 3306; // ⚠️ CAMBIA ESTE NÚMERO POR EL PUERTO QUE PUSISTE EN XAMPP (ej. 3307)
+$puerto = 3307; // Puerto actualizado a 3307
 
 $conexion = mysqli_connect($servidor, $usuario_db, $password_db, $nombre_db, $puerto);
 
